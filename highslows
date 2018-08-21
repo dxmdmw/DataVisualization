@@ -1,0 +1,29 @@
+'''创建一个输入文件名，分析后返回日期及气温高低的类'''
+
+import csv
+from datetime import datetime
+
+class HighsLows():
+    def __init__(self, filename):
+        self.filename = filename
+        self.dates = []
+        self.highs = []
+        self.lows = []
+
+# 定义获取日期及气温高低的方法
+    def get_highs_lows(self):
+        with open(self.filename) as f:
+            reader = csv.reader(f)
+            header_row = next(reader)
+
+            for row in reader:
+                try:
+                    current_date = datetime.strptime(row[0],'%Y-%m-%d')
+                    high = int(row[1])
+                    low = int(row[3])
+                except ValueError:
+                    print(current_date, 'missing data')
+                else:
+                    self.dates.append(current_date)
+                    self.highs.append(high)
+                    self.lows.append(low)
