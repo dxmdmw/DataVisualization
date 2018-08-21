@@ -1,0 +1,32 @@
+'''在一个图表中比较锡特卡和死亡谷的气温范围'''
+
+import matplotlib.pyplot as plt 
+from highslows import HighsLows
+
+filename_1 = 'death_valley_2014.csv'
+filename_2 = 'sitka_weather_2014.csv'
+
+# 实例化两地气温范围
+weather_1 = HighsLows(filename_1)
+weather_2 = HighsLows(filename_2)
+
+# 调用获取气温范围的函数
+weather_1.get_highs_lows()
+weather_2.get_highs_lows()
+
+# 使用pyplot呈现两地气温范围
+fig = plt.figure(dpi=128, figsize=(10,6))
+plt.plot(weather_1.dates, weather_1.highs, c='red', alpha=0.5)
+plt.plot(weather_1.dates, weather_1.lows, c='blue', alpha=0.5)
+plt.fill_between(weather_1.dates, weather_1.highs, weather_1.lows, facecolor='blue', alpha=0.3)
+
+plt.plot(weather_2.dates, weather_2.highs, c='green', alpha=0.5)
+plt.plot(weather_2.dates, weather_2.lows, c='yellow', alpha=0.5)
+plt.fill_between(weather_2.dates, weather_2.highs, weather_2.lows, facecolor='yellow', alpha=0.3)
+
+plt.title('Daily high and low temperatures - 2014\nDeath Valley & Sitka', fontsize=24)
+plt.xlabel('', fontsize=16)
+fig.autofmt_xdate()
+plt.ylabel('Temperature (F)', fontsize=16)
+plt.tick_params(axis='both', which='major', labelsize=16)
+plt.show()
