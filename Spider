@@ -6,6 +6,8 @@ import re
 
 from urllib import request   #引入内置库urllib模块中的request对象
 
+import csv
+
 class Spider():
     '''
     爬虫实现数据抓取
@@ -79,11 +81,30 @@ class Spider():
         '''
         数据展示
         '''
+        data = []
 
         for rank in range(0, len(anchors)):
+            a = str('rank ' + str(rank + 1) + '  :  ')
+            b = str(anchors[rank]['name'])
+            c = str(anchors[rank]['number'])
+
+            data.append([a,b,c])
+
             print('rank ' + str(rank + 1)
             + '  :  ' + anchors[rank]['name']
             +'     ' + anchors[rank]['number'])
+        
+        # 输出CSV文件
+        with open("test.csv","w",encoding="utf-8") as csvfile: 
+                        
+            writer = csv.writer(csvfile)
+
+            writer.writerow(["rank","主播","人气"])
+
+            writer.writerows(data)
+
+
+
 
     #入口方法
     def go(self):     
