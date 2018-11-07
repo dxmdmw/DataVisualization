@@ -1,0 +1,100 @@
+'''
+  抓取熊猫 TV 刀塔 2 区的主播实时人气，并按照从高到低排名
+'''
+
+import re
+
+from urllib import request   #引入内置库urllib模块中的request对象
+
+class Spider():
+    '''
+    爬虫实现数据抓取
+    '''
+    # 引用目标url
+    url = 'https://www.panda.tv/cate/dota2' #类变量
+
+    # 用正则表达式提取关键数据
+    root_pattern = '<div class="video-info">([\s\S]*?)</div>'
+    name_pattern = '</i>([\s\S]*?)</span>'
+    number_pattern = '<span class="video-number">([\s\S]*?)</span>'
+    
+    #——__双下划綫代表私有方法
+    def __fetch_content(self):         
+        '''
+        数据抓取函数
+        '''
+        
+        # urlopen方法可以接收url（网页地址）
+        r = request.urlopen(Spider.url)
+        htmls = r.read()
+        htmls = str(htmls, encoding = 'utf-8')
+        return htmls
+
+    def __analysis(self, htmls):
+        '''
+        数据分析
+        '''
+        root_html = re.findall(Spider.root_pattern, htmls)
+
+        anchors = []
+        for html in root_html:
+            name = re.findall(Spider.name_pattern, html)
+            number = re.findall(Spider.number_pattern, html)
+            anchor = {'name':name, 'number':number}
+            anchors.append(anchor)
+
+        return anchors
+
+    def __refine(self, anchors):
+        '''
+        数据精炼
+        '''
+
+        l = lambda anchor:{
+            'name':anchor['name'][0].strip(),
+            'number':anchor['number'][0]
+            }
+        return map(l, anchors)
+
+    def __sort(self, anchors):
+        '''
+        数据处理，此处为排序
+        '''
+
+        anchors = sorted(anchors, key = self.__sort_seed, reverse=True )
+        return anchors
+
+    def __sort_seed(self, anchor):
+        '''
+        排序函数实现对非数字数据处理
+        '''
+
+        r = re.findall('\d*', anchor['number'])
+        number = float(r[0])
+        if '万' in anchor['number']:
+            number *= 10000
+        return number
+
+    def __show(self, anchors):
+        '''
+        数据展示
+        '''
+
+        for rank in range(0, len(anchors)):
+            print('rank ' + str(rank + 1)
+            + '  :  ' + anchors[rank]['name']
+            +'     ' + anchors[rank]['number'])
+
+    #入口方法
+    def go(self):     
+        htmls = self.__fetch_content()
+        anchors = self.__analysis(htmls)
+        anchors = list(self.__refine(anchors))
+        anchors = self.__sort(anchors)
+        self.__show(anchors)
+
+#实例化
+spider = Spider() 
+
+#对象调用go方法  go调用__fetch_content等
+spider.go()       
